@@ -1,0 +1,5 @@
+sigma-cli
+pysigma
+pysigma-backend-elasticsearch
+pysigma-backend-splunk
+pysigma-backend-opensearch

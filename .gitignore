@@ -1,0 +1,15 @@
+.env
+misp/.env
+misp/ssl/
+misp/logs/
+misp/files/
+misp/configs/
+misp/gnupg/
+misp/custom/
+CREDENTIALS.md
+sigma/.venv/
+nids/pcaps/*.pcap
+!nids/pcaps/sample_traffic.pcap
+nids/suricata-logs/
+nids/zeek-logs/
+nids/rules/

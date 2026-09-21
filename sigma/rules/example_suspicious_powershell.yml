@@ -1,0 +1,24 @@
+title: Suspicious PowerShell EncodedCommand
+id: 6f2c9a1e-6b3f-4e51-9b1a-000000000001
+status: experimental
+description: Detects PowerShell invoked with an encoded command, common in obfuscated droppers/loaders
+references:
+    - https://attack.mitre.org/techniques/T1059/001/
+author: NicolasSb
+date: 2026/09/21
+tags:
+    - attack.execution
+    - attack.t1059.001
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\powershell.exe'
+        CommandLine|contains:
+            - '-EncodedCommand'
+            - '-enc '
+    condition: selection
+falsepositives:
+    - Legitimate admin scripts using encoded commands
+level: medium

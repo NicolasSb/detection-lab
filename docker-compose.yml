@@ -1,0 +1,80 @@
+services:
+  velociraptor:
+    image: wlambert/velociraptor:latest
+    profiles: ["velociraptor", "week5"]
+    container_name: lab-velociraptor
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # client comms
+      - "8889:8889"   # web GUI
+      - "8001:8001"   # API
+    environment:
+      - VELOX_FRONTEND_HOSTNAME=localhost
+      - VELOX_SERVER_URL=https://localhost:8000/
+      - VELOX_USER=admin
+      - VELOX_PASSWORD=${VELOX_PASSWORD:-changeme-lab}
+      - VELOX_ROLE=administrator
+    volumes:
+      - velociraptor_data:/velociraptor
+
+  samba-ad:
+    image: nowsci/samba-domain:latest
+    profiles: ["ad", "week3"]
+    container_name: lab-samba-ad
+    restart: unless-stopped
+    hostname: dc1
+    environment:
+      - DOMAIN=LAB.LOCAL
+      - DOMAINPASS=${SAMBA_DOMAINPASS:-changeme-lab}
+      - JOIN=false
+      - INSECURELDAP=true
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - samba_data:/var/lib/samba
+    ports:
+      - "389:389"
+      - "636:636"
+      - "88:88"
+      - "464:464"
+
+  suricata:
+    image: jasonish/suricata:latest
+    profiles: ["nids", "week4"]
+    container_name: lab-suricata
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_NICE
+    volumes:
+      - ./nids/pcaps:/pcaps:ro
+      - ./nids/suricata-logs:/var/log/suricata
+      - ./nids/rules:/etc/suricata/rules
+    entrypoint: ["sleep", "infinity"]  
+  zeek:
+    image: zeek/zeek:latest
+    profiles: ["nids", "week4"]
+    container_name: lab-zeek
+    volumes:
+      - ./nids/pcaps:/pcaps:ro
+      - ./nids/zeek-logs:/zeek-logs
+    working_dir: /zeek-logs
+    entrypoint: ["sleep", "infinity"]
+
+  caldera:
+    image: mitre/caldera:latest
+    profiles: ["caldera"]
+    container_name: lab-caldera
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+      - "7010:7010"
+      - "7011:7011/udp"
+      - "7012:7012"
+    volumes:
+      - caldera_data:/usr/src/app/data
+
+volumes:
+  velociraptor_data:
+  samba_data:
+  caldera_data:
