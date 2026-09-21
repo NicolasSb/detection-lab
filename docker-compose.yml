@@ -1,4 +1,14 @@
 services:
+  # semaine 2, host Linux avec auditd + ruleset Neo23x0
+  auditd-lab:
+    build: ./auditd
+    profiles: ["auditd", "week2"]
+    container_name: lab-auditd
+    privileged: true
+    pid: host
+    volumes:
+      - auditd_logs:/var/log/audit
+
   velociraptor:
     image: wlambert/velociraptor:latest
     profiles: ["velociraptor", "week5"]
@@ -78,3 +88,4 @@ volumes:
   velociraptor_data:
   samba_data:
   caldera_data:
+  auditd_logs:

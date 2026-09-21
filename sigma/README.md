@@ -8,9 +8,9 @@ et à mesure.
     ./.venv/bin/sigma plugin list --plugin-type pipeline   # pipelines dispo (sysmon, windows, ...)
     ./.venv/bin/sigma plugin list --plugin-type backend    # backends dispo
 
-tp/ : énoncés + corrigés de TP perso, pas dans git (voir .gitignore). tp/semaine1
-couvre la conversion Wazuh->Sigma, avec 21 vraies règles du ruleset officiel
-Wazuh à convertir et un corrigé expliqué.
+../tp/semaine1/ : énoncé + corrigé du TP de conversion Wazuh->Sigma, avec 21
+vraies règles du ruleset officiel Wazuh. Pas dans git (voir ../.gitignore),
+c'est du matériel de révision, pas mon travail.
 
 Bug à connaître si sigma check/convert plante avec "TypeError: 'str' object
 is not callable" : pyparsing 3.3.3+ casse le parsing de toute condition avec

@@ -8,7 +8,7 @@ misp/gnupg/
 misp/custom/
 CREDENTIALS.md
 sigma/.venv/
-sigma/tp/
+tp/
 nids/pcaps/*.pcap
 !nids/pcaps/sample_traffic.pcap
 nids/suricata-logs/

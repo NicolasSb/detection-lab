@@ -16,6 +16,20 @@ OpenSearch donc opensearch_lucene est ce qui s'en approche le plus pour vérifie
 règle. Pour les vieilles règles Wazuh en XML, pas de conversion automatique possible,
 juste une réécriture à la main en se raccrochant à la technique ATT&CK correspondante.
 
+Semaine 2, auditd + ruleset Neo23x0 :
+
+    docker compose --profile auditd up -d auditd-lab
+    docker exec lab-auditd auditctl -l | wc -l   # doit sortir 203
+
+Tourne en `privileged: true` + `pid: host`, c'est nécessaire : le
+sous-système audit du noyau n'est pas namespacé, un seul auditd peut être
+enregistré par noyau (tous conteneurs confondus). Conséquence : ce
+conteneur voit aussi l'activité du host, pas juste la sienne. Beaucoup de
+règles filtrent sur `auid>=1000`, qu'un simple `docker exec`/`su` ne pose
+pas correctement (reste "unset") - il faut forcer `echo 1001 >
+/proc/self/loginuid` avant de lancer une commande en tant que `labuser`
+pour que ces règles déclenchent.
+
 AD minimal + attaque :
 
     docker compose --profile ad up -d
@@ -46,7 +60,7 @@ Velociraptor : https://localhost:8889/ - MISP : https://localhost:8443/
 
 Pour tout arrêter et garder les données :
 
-    docker compose --profile velociraptor --profile ad --profile nids --profile caldera down
+    docker compose --profile velociraptor --profile ad --profile nids --profile caldera --profile auditd down
     (cd misp && docker compose down)
 
 Ajouter -v aux deux commandes pour repartir de zéro (supprime aussi les données).
