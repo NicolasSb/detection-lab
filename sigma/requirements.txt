@@ -3,3 +3,6 @@ pysigma
 pysigma-backend-elasticsearch
 pysigma-backend-splunk
 pysigma-backend-opensearch
+# pin obligatoire : pyparsing >=3.3.3 casse le parsing des conditions "X and not Y"
+# dans pySigma (bug ouvert SigmaHQ/pySigma#548 au 21/09/2026, PR #549 pas encore mergée)
+pyparsing<3.3.3
