@@ -9,16 +9,16 @@ rencontrées en le faisant, pas une théorie a priori.
 
 **1. Identifier la source du log, pas le contenu de la description.**
 Une règle Wazuh ne dit pas toujours explicitement quel type de log elle
-regarde - il faut remonter à la règle parente (`if_sid`, `if_group`) ou au
+regarde. Il faut remonter à la règle parente (`if_sid`, `if_group`) ou au
 décodeur (`decoded_as`) pour le savoir. Par exemple `5701` (sonde de
 protocole SSH) référence `<if_sid>5700</if_sid>`, et c'est la règle 5700
-elle-même qui porte `<decoded_as>sshd</decoded_as>` - l'indice n'est pas
+elle-même qui porte `<decoded_as>sshd</decoded_as>`. L'indice n'est pas
 sur la règle qu'on convertit, mais sur son parent.
 
 **2. Choisir le `logsource` Sigma en fonction du champ observé, pas de l'OS visé.**
 Le nom du champ que la règle Wazuh interroge dit directement quelle
-combinaison `category`/`product`/`service` utiliser côté Sigma - voir la
-table plus bas. La règle pratique retenue : `service` + `product` quand la
+combinaison `category`/`product`/`service` utiliser côté Sigma (voir la
+table plus bas). La règle pratique retenue : `service` + `product` quand la
 source est un démon précis lié à un seul OS (sshd, auditd, le journal
 Windows Security natif), `category` seule quand la source est une famille
 de log indépendante du logiciel exact qui l'a produite (un serveur web,
@@ -28,7 +28,7 @@ Windows).
 
 **3. Traduire la syntaxe de correspondance, pas juste copier le texte.**
 Wazuh utilise très souvent des regex PCRE2 (`type="pcre2"`), avec ou sans
-ancres (`^...$`). Sigma préfère des valeurs littérales combinées à des
+ancres (`^...$`). Sigma utilise des valeurs littérales combinées à des
 modificateurs (`|contains`, `|endswith`, `|startswith`) plutôt que de la
 regex - une valeur Wazuh ancrée (`^lsass\.exe$`) devient une égalité ou un
 `|endswith` simple, une valeur non ancrée devient un `|contains`. Copier le
@@ -37,8 +37,7 @@ jamais (voir la section pièges plus bas).
 
 **4. Mapper le tag `<mitre>` vers les tactiques réelles, pas une seule au choix.**
 Le tag `<mitre><id>Txxxx</id></mitre>` fourni nativement par Wazuh donne la
-technique. La ou les tactiques associées ne se devinent pas : elles se
-vérifient avec la donnée que l'outil de validation utilise lui-même :
+technique.On peut vérifier avec la donnée que l'outil de validation utilise lui-même :
 
 ```python
 from sigma.data import mitre_attack as m
@@ -46,7 +45,7 @@ m.mitre_attack_techniques_tactics_mapping.get('T1055')
 # ['stealth', 'privilege-escalation']
 ```
 
-Certaines techniques n'ont qu'une tactique, d'autres plusieurs - dans ce
+Certaines techniques n'ont qu'une tactique, d'autres plusieurs. Dans ce
 cas les règles SigmaHQ réelles les mettent toutes, pas une seule choisie
 arbitrairement (vérifié en comparant avec des règles publiées du dépôt
 `SigmaHQ/sigma` sur des techniques proches de celles converties ici).
@@ -80,8 +79,8 @@ bas ne sont visibles qu'à la conversion, jamais au `check`.
 
 Règle générale pour retrouver un nom de champ Sigma sans cette table sous
 les yeux : c'est quasiment toujours le nom de champ Sysmon natif tel qu'il
-apparaît dans l'event XML brut, en PascalCase - Wazuh le transforme en
-camelCase et le préfixe par `win.eventdata.`. Retirer le préfixe, remettre
+apparaît dans l'event XML brut, en PascalCase (Wazuh le transforme en
+camelCase et le préfixe par `win.eventdata.`). Retirer le préfixe, remettre
 la première lettre en majuscule.
 
 ## Difficultés rencontrées
@@ -91,8 +90,8 @@ la première lettre en majuscule.
 **`pyparsing >= 3.3.3` casse toute condition `X and not Y`.** Symptôme :
 `sigma check`/`sigma convert` plantent avec une trace Python se terminant
 par `TypeError: 'str' object is not callable`, sur n'importe quelle règle
-combinant deux identifiants avec `and not` - un pattern pourtant très
-courant pour exclure des faux positifs connus (`selection and not filter`).
+combinant deux identifiants avec `and not`. Ce pattern est pourtant utile
+pour exclure des faux positifs connus (`selection and not filter`).
 Reproduit en isolant un cas minimal (deux sélections triviales), confirmé
 comme régression connue sur le dépôt de pySigma
 ([SigmaHQ/pySigma#548](https://github.com/SigmaHQ/pySigma/issues/548)).
