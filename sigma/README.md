@@ -5,6 +5,11 @@ rules/example_suspicious_powershell.yml : juste pour vérifier que la chaîne
 check -> convert marche, à remplacer par mes vraies conversions Wazuh au fur
 et à mesure.
 
+METHODOLOGIE.md : comment je convertis une règle Wazuh en Sigma (repérer la
+source du log, choisir le bon logsource, traduire la syntaxe de match), la
+table de correspondance des champs, et le détail des bugs/pièges rencontrés
+en le faisant.
+
     ./.venv/bin/sigma plugin list --plugin-type pipeline   # pipelines dispo (sysmon, windows, ...)
     ./.venv/bin/sigma plugin list --plugin-type backend    # backends dispo
 
