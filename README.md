@@ -2,8 +2,6 @@ Labo pour montée en compétence sur Sigma, adapté à ma machine (4 coeurs,
 ~62 Go de disque libre). Que du Docker + un venv Python, pas d'ISO Security Onion ni
 de GOAD complet.
 
-Identifiants générés : voir CREDENTIALS.md (pas commité).
-
 Sigma, pas de conteneur nécessaire :
 
     cd sigma
@@ -16,7 +14,7 @@ OpenSearch donc opensearch_lucene est ce qui s'en approche le plus pour vérifie
 règle. Pour les vieilles règles Wazuh en XML, pas de conversion automatique possible,
 juste une réécriture à la main en se raccrochant à la technique ATT&CK correspondante.
 
-Semaine 2, auditd + ruleset Neo23x0 :
+auditd + ruleset Neo23x0 :
 
     docker compose --profile auditd up -d auditd-lab
     docker exec lab-auditd auditctl -l | wc -l   # doit sortir 203
@@ -40,7 +38,7 @@ ACL, GPO piégées). Bon pour comprendre auditd/Sysmon côté AD et Kerberos, pa
 suffisant pour rejouer Kerberoasting/DCSync sans configurer des comptes vulnérables à
 la main d'abord.
 
-Semaine 4, NIDS sur pcap (pas de capture live) :
+NIDS sur pcap (pas de capture live) :
 
     docker compose --profile nids up -d
     docker exec lab-suricata suricata-update -o /etc/suricata/rules --no-test
