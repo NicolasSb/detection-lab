@@ -1,0 +1,22 @@
+title: Lsass process was accessed
+id: 00ddf2be-6349-46e1-be63-2c66e39f2892
+status: experimental
+description: "Local Security Authority Subsystem Service (LSASS) process was accessed by $(win.eventdata.sourceImage), possible code injection for credential dumping"
+references:
+    - https://attack.mitre.org/techniques/T1055
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.stealth
+    - attack.privilege-escalation
+    - attack.t1055
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: "\\lsass.exe"
+    condition: selection
+falsepositives:
+    - Unknown
+level: High

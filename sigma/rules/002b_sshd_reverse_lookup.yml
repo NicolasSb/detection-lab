@@ -1,0 +1,21 @@
+title: SSH Possible Breakin Attempt (rafale d'erreurs de reverse lookup)
+id: ad513bf1-c455-4c9d-a5d7-8cd264d7e69d
+status: experimental
+description: Reverse lookup error (bad ISP or attack).
+references:
+    - https://attack.mitre.org/techniques/T1110/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.credential-access
+    - attack.t1110
+correlation:
+    type: event_count
+    rules:
+        - 959e55af-f47d-420f-bf10-8d757333812f
+    group-by:
+        - src_ip
+    timespan: 6m
+    condition:
+        gte: 6
+level: high

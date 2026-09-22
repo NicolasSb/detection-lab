@@ -1,0 +1,21 @@
+title: RDP port activity
+id: e4219939-4af5-4f21-a523-f5519e9ca30d
+status: experimental
+description: "Detected RDP port network activity from $(win.eventdata.sourceIp) to $(win.eventdata.destinationIp)"
+references:
+    - https://attack.mitre.org/techniques/T1021/001
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.lateral-movement
+    - attack.t1021.001
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        DestinationPort: 3389
+    condition: selection
+falsepositives:
+    - Vulnerability scan, nmap from sys admin
+level: Low

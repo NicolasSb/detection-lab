@@ -1,0 +1,22 @@
+title: Bad protocol version identification
+id: 19a9aee4-170f-458f-8ef8-f2da2c7cdbb8
+status: experimental
+description: Possible attack on the ssh server (or version gathering).
+references:
+    - https://attack.mitre.org/techniques/T1190
+author: NicolasSb
+date: 2026/09/21
+tags:
+    - attack.initial-access
+    - attack.t1190
+logsource:
+    service: sshd 
+    product: linux
+detection:
+    selection:
+        message|contains: "bad protocol version identification"
+    condition: selection
+falsepositives:
+    - Legitimate Nmap scan | vulnerability scan 
+level: medium
+

@@ -1,0 +1,23 @@
+title: Security Enabled Local Group Member Added
+id: 206bc739-bae8-4ebc-94b3-b337e75ce9ec
+status: experimental
+description: "Security Enabled Local Group Member Added"
+references:
+    - https://attack.mitre.org/techniques/T1484/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.privilege-escalation
+    - attack.t1484
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 
+            - 636
+            - 4732
+    condition: selection
+falsepositives:
+    - legitimate admin action
+level: Medium

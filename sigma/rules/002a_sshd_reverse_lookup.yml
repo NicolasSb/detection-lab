@@ -1,0 +1,25 @@
+title: Reverse lookup error
+id: 959e55af-f47d-420f-bf10-8d757333812f
+status: experimental
+description: Reverse lookup error (bad ISP or attack).
+references:
+    - https://attack.mitre.org/techniques/T1110/
+author: NicolasSb
+date: 2026/09/21
+tags:
+    - attack.credential-access
+    - attack.t1110
+logsource:
+    service: sshd 
+    product: linux
+detection:
+    selection:
+        message|contains: "reverse mapping"
+        message|contains|all:
+            - "failed"
+            - "POSSIBLE BREAK"
+    condition: selection
+falsepositives:
+    - Résolveur DNS mal configuré côté client (bruit, mais pas une attaque) 
+level: low
+

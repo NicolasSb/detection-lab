@@ -1,0 +1,21 @@
+title: Detected WinRM activity
+id: 0d0570f6-b85c-4240-ae9e-eb70af09383a
+status: experimental
+description: "Detected WinRM activity from $(win.eventdata.sourceIp) to $(win.eventdata.destinationIp)"
+references:
+    - https://attack.mitre.org/techniques/T1021/006
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.lateral-movement
+    - attack.t1021.006
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        DestinationPort: 5985
+    condition: selection
+falsepositives:
+    - Vulnerability scan, nmap from sys admin
+level: low

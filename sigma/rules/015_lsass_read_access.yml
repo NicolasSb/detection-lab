@@ -1,0 +1,28 @@
+title: Lsass process was accessed with read permissions
+id: 23a0b08d-390c-4d7c-aa3d-36795478d17e
+status: experimental
+description: "Lsass process was accessed by $(win.eventdata.sourceImage) with read permissions, possible credential dump"
+references:
+    - https://attack.mitre.org/techniques/T1003/001
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.credential-access
+    - attack.t1003.001
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection_target : 
+        TargetImage|endswith: "\\lsass.exe"
+    selection_access: 
+        GrantedAccess: 
+            - '0x1010'
+            - '0x40'
+    filter :
+        - SourceImage|contains: "C:\\Program Files"
+        - SourceImage|endswith: "\\wmiprvse.exe"
+    condition: selection_target and selection_access and not filter
+falsepositives:
+    - Vulnerability scan on sensitive files
+level: High

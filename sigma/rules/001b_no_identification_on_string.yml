@@ -1,0 +1,21 @@
+title: Insecure connection attempt
+id: 2f7e8e43-05a5-4d39-93cb-4374fbaa71a1
+status: experimental
+description: "sshd: insecure connection attempt (scan)."
+references:
+    - https://attack.mitre.org/techniques/T1021/004/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.lateral-movement
+    - attack.t1021.004
+logsource:
+    service: sshd 
+    product: linux
+detection:
+    selection:
+        message|contains: "Did not receive identification string from"
+    condition: selection
+falsepositives:
+    - Load balancer ou healthcheck qui ouvre une connection sans négocier le SSH
+level: medium

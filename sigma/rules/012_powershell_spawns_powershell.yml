@@ -1,0 +1,22 @@
+title: Powershell process spawned powershell instance
+id: 7facfd93-c32f-457a-a9f3-24ab183c680b
+status: experimental
+description: "Powershell process spawned powershell instance"
+references:
+    - https://attack.mitre.org/techniques/T1059/001
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.execution
+    - attack.t1059.001
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: "\\powershell.exe"
+        ParentImage|endswith: "\\powershell.exe"
+    condition: selection
+falsepositives:
+    - Modules PowerShell légitimes qui s'enchaînent dans un même flux d'admin
+level: Low

@@ -1,0 +1,29 @@
+title: XSS attempt.
+id: 5b27aa69-4dde-4e6c-8214-3aa54846f770
+status: experimental
+description: "XSS (Cross Site Scripting) attempt."
+references:
+    - https://attack.mitre.org/techniques/T1059/007/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.initial-access
+    - attack.t1059.007
+logsource:
+    category: webserver 
+detection:
+    selection:
+        cs-uri-query|contains: 
+            - '%3Cscript'
+            - '%3C%2Fscript'
+            - 'script>'
+            - 'script%3E'
+            - 'SRC=javascript'
+            - 'IMG%20'
+            - '%20ONLOAD='
+            - 'INPUT%20'
+            - 'iframe%20'
+    condition: selection
+falsepositives:
+    - Pentest interne | scanning
+level: Medium

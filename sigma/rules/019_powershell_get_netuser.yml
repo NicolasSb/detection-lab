@@ -1,0 +1,21 @@
+title: Powershell script "Get-NetUser" executed
+id: 46308526-5f49-474f-b9a8-34384eae9b7b
+status: experimental
+description: "Powershell script Get-NetUser executed"
+references:
+    - https://attack.mitre.org/techniques/T1087/002
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.discovery
+    - attack.t1087.002
+logsource:
+    category: ps_script
+    product: windows
+detection:
+    selection:
+        ScriptBlockText|contains : "Get-NetUser"
+    condition: selection
+falsepositives:
+    - Vulnerability scan, nmap from sys admin
+level: low

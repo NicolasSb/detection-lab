@@ -1,0 +1,24 @@
+title: Powershell used to copy SAM hive from VSS
+id: 0f9970c9-1b2b-4e17-8426-081d863c8eaa
+status: experimental
+description: "Powershell used to copy SAM hive from VSS"
+references:
+    - https://attack.mitre.org/techniques/T1059/001
+    - https://attack.mitre.org/techniques/T1003/002
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - attack.credential-access
+    - attack.t1003.002
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        CommandLine|contains: "[System.IO.File]::Copy"
+    condition: selection
+falsepositives:
+    - Backup software using VSS
+level: High

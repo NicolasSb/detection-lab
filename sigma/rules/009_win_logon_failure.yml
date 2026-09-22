@@ -1,0 +1,36 @@
+title: Windows Logon Failure
+id: 1863272a-df7d-4162-ba98-e4db4e2c7a7a
+status: experimental
+description: "Windows Logon Failure"
+references:
+    - https://attack.mitre.org/techniques/T1078/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.persistence
+    - attack.privilege-escalation
+    - attack.initial-access
+    - attack.stealth
+    - attack.t1078
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 
+            - 529
+            - 530
+            - 531
+            - 532
+            - 533
+            - 534
+            - 535
+            - 536
+            - 537
+            - 538
+            - 539
+            - 4625
+    condition: selection
+falsepositives:
+    - Automated system checks trying to auth with a disabled account
+level: Medium

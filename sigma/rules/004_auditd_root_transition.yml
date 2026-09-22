@@ -1,0 +1,21 @@
+title: Auditd user becomes root
+id: 12285155-695d-4483-9bc2-8efe5affb283
+status: experimental
+description: "Auditd: user becomes root"
+references:
+    - https://attack.mitre.org/techniques/T1548/003/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.privilege-escalation
+    - attack.t1548.003
+logsource:
+    service: auditd 
+    product: linux
+detection:
+    selection:
+        type: ANOM_ROOT_TRANS
+    condition: selection
+falsepositives:
+    - Execution d'un script d'administration par un admin légitime
+level: High

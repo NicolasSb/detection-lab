@@ -1,0 +1,21 @@
+title: Auditd account added
+id: d0d9cd58-291c-4685-9f2a-5fc37e0dd280
+status: experimental
+description: User-space account addition ended abnormally.
+references:
+    - https://attack.mitre.org/techniques/T1136/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.persistence
+    - attack.t1136
+logsource:
+    service: auditd 
+    product: linux
+detection:
+    selection:
+        type: ANOM_ADD_ACCT
+    condition: selection
+falsepositives:
+    - Création de compte via un outil de provisioning (Ansible, etc.) hors process normal
+level: low

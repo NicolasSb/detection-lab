@@ -1,0 +1,30 @@
+title: SQL injection attempt.
+id: a60d5a4d-f363-4bbd-acfd-bdda082985fd
+status: experimental
+description: "SQL injection attempt"
+references:
+    - https://attack.mitre.org/techniques/T1190/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.initial-access
+    - attack.t1190
+logsource:
+    category: webserver 
+detection:
+    selection:
+        cs-uri-query|contains: 
+            - '=select%20'
+            - 'select+'
+            - 'insert%20'
+            - '%20from%20'
+            - '%20where%20'
+            - 'union%20'
+            - 'union+'
+            - 'where+'
+            - 'null,null'
+            - 'xp_cmdshell'
+    condition: selection
+falsepositives:
+    - Pentest interne | scanning
+level: Medium

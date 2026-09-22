@@ -1,0 +1,21 @@
+title: Auditd loggin failure
+id: 0a9ef6f2-7a1c-4d07-a502-6fd46b6545bb
+status: experimental
+description: "Auditd: Limit of failed login attempts reached."
+references:
+    - https://attack.mitre.org/techniques/T1110/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.credential-access
+    - attack.t1110
+logsource:
+    service: auditd 
+    product: linux
+detection:
+    selection:
+        type: ANOM_LOGIN_FAILURES
+    condition: selection
+falsepositives:
+    - User forgot his password
+level: Medium

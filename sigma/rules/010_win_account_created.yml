@@ -1,0 +1,26 @@
+title: User account enabled or created
+id: 044f5e1a-94a4-40bd-af39-2b09232587ae
+status: experimental
+description: "User account enabled or created"
+references:
+    - https://attack.mitre.org/techniques/T1098/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.persistence    
+    - attack.privilege-escalation
+    - attack.t1098
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 
+            - 624
+            - 626
+            - 4720
+            - 4722
+    condition: selection
+falsepositives:
+    - création de compte via un outil de provisioning RH/IT (Ansible, AD Connect...)
+level: Medium

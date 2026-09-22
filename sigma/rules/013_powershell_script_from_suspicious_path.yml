@@ -1,0 +1,33 @@
+title: Powershell executed script from suspicious location
+id: 943a4791-2bbc-4777-9151-77608399f20a
+status: experimental
+description: "Powershell executed script from suspicious location"
+references:
+    - https://attack.mitre.org/techniques/T1059/001
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.execution
+    - attack.t1059.001
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        CommandLine|contains:
+            - 'Windows\Temp'
+            - '\Users\'
+        CommandLine|endswith: 
+            - ".bat"
+            - ".cmd"
+            - ".lnk"
+            - ".pif"
+            - ".vbs"
+            - ".vbe"
+            - ".js"
+            - ".wsh"
+            - ".ps1"
+    condition: selection
+falsepositives:
+    - Legitimate admin operations
+level: Medium

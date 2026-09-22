@@ -1,0 +1,25 @@
+title: PHP CGI
+id: 6f44117e-040a-4a9e-9483-bfe3fb04a2a9
+status: experimental
+description: "PHP CGI-bin vulnerability attempt."
+references:
+    - https://attack.mitre.org/techniques/T1210/
+author: NicolasSb
+date: 2026/09/22
+tags:
+    - attack.initial-access
+    - attack.t1210
+logsource:
+    category: webserver 
+detection:
+    selection:
+        cs-uri-query|contains: 
+            - '?-d'
+            - '?-s'
+            - '?-a'
+            - '?-b'
+            - '?-w'
+    condition: selection
+falsepositives:
+    - Pentest interne | scanning
+level: Medium
