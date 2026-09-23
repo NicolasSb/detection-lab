@@ -129,7 +129,7 @@ voit que ce qui a survécu au parsing.
   nécessaires à la conversion - en ajouter un à la main dans la valeur
   produit un avertissement de l'outil (`WildcardInsteadOfEndswithIssue`)
   dont la suggestion de correction n'est pas toujours la bonne, à évaluer
-  au cas par cas plutôt qu'à suivre aveuglément.
+  au cas par cas.
 
 ### Zones sans mapping propre
 
