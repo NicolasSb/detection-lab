@@ -51,7 +51,8 @@ Analyse fichier par fichier d'échantillons `.evtx` issus du dépôt public
 [sbousseaden/EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES)
 (rendus en `.xml` pour la lecture). Ces échantillons ne font pas partie
 de ce dépôt, les noms de fichiers cités ci-dessous renvoient au dépôt
-source.
+source. Rendu XML reproductible avec `tools/evtx_to_xml.py`, testé sur
+ces mêmes échantillons.
 
 ### meterpreter_migrate_to_explorer_sysmon_8.xml
 
