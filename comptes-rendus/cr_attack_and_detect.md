@@ -1,5 +1,11 @@
 # Attaquer et détecter la même technique : retour d'expérience Active Directory
 
+> À visée pédagogique. Les techniques offensives sont décrites contre un lab
+> personnel et autorisé, dans le seul but de construire et justifier leur
+> détection. Les séquences d'attaque sont volontairement incomplètes : l'outil et
+> le principe sont cités, la ligne de commande directement exploitable est
+> retirée. Le contenu de détection (EventID, champs, règles) est complet.
+
 Sept techniques d'attaque Active Directory (Kerberoasting, AS-REP Roasting,
 Pass-the-Hash, DCSync, extraction NTDS, abus de GPO, délégation contrainte) sur
 le principe attaque plus détection : rejouer la technique, identifier la
@@ -65,19 +71,15 @@ Un compte de service porteur d'un SPN a un ticket de service chiffré avec la cl
 dérivée de son mot de passe. Tout compte du domaine peut le demander, puis le
 casser hors ligne.
 
-**Reconnaissance (mesurée).** En s'authentifiant comme un utilisateur lambda :
+**Reconnaissance (mesurée).** En s'authentifiant comme un utilisateur lambda du
+domaine, `GetUserSPNs.py` (impacket) énumère les comptes porteurs d'un SPN via
+LDAP, sans privilège particulier. Retourne `MSSQLSvc/dc1.lab.local:1433` porté par
+`svc_sql`.
+
+**Extraction (bloquée).** La même commande avec l'option `-request` (récupération
+du ticket crackable) échoue :
 
 ```
-GetUserSPNs.py -dc-ip <IP_DC> -dc-host dc1.lab.local 'lab.local/<user>:<pass>'
-```
-
-Retourne `MSSQLSvc/dc1.lab.local:1433` porté par `svc_sql`. L'énumération des SPN
-passe par LDAP sans privilège particulier.
-
-**Extraction (bloquée).** Ajouter `-request` pour récupérer le ticket crackable :
-
-```
-GetUserSPNs.py ... -request
 [-] Principal: lab.local\svc_sql - Kerberos SessionError:
     KRB_AP_ERR_INAPP_CKSUM(Inappropriate type of checksum in message)
 ```
@@ -111,11 +113,10 @@ aucun compte du domaine n'est nécessaire, il suffit du nom d'un compte vulnéra
 
 **Attaque (bloquée par le KDC).** `asrep_test` a la pré-authentification désactivée
 (userAccountControl 4194816, bit `0x400000`, vérifié via `samba-tool user show` et
-`ldbsearch`). La demande d'AS-REP sur une liste de comptes candidats :
+`ldbsearch`). La demande d'AS-REP sur une liste de comptes candidats
+(`GetNPUsers.py`, impacket, `-no-pass`) donne pour `asrep_test` :
 
 ```
-GetNPUsers.py -dc-ip <IP_DC> -dc-host dc1.lab.local lab.local/ \
-  -usersfile users.txt -no-pass -format hashcat
 [-] User asrep_test doesn't have UF_DONT_REQUIRE_PREAUTH set
 ```
 
@@ -151,24 +152,14 @@ qu'elle reste sur NTLM et SMB, hors de la surface Kerberos.
 
 **Prérequis, le hash.** Pass-the-Hash suppose un hash déjà obtenu en amont (dump
 LSASS, DCSync). DCSync étant bloqué contre Samba (voir plus bas), le hash est ici
-pris côté DC, ce qui tient lieu de cette étape :
+extrait côté DC (`samba-tool user getpassword`, attribut `unicodePwd` en base64 à
+décoder en hex), ce qui tient lieu de cette étape amont.
 
-```
-samba-tool user getpassword lat_user --attributes=unicodePwd
-# unicodePwd en base64 -> décodage hex -> hash NT
-```
-
-**Attaque (mesurée).** Authentification SMB avec le hash, sans mot de passe :
-
-```
-smbclient.py -hashes aad3b435b51404eeaad3b435b51404ee:<NT_hash> \
-  'lab.local/lat_user@<IP_DC>'
-```
-
-Le format `-hashes` est `LMHASH:NTHASH` ; la partie LM vaut la constante d'un LM
-vide, seul le NT compte. La commande ouvre une session SMB authentifiée sur le DC
-(partages `sysvol`, `netlogon`) sans que le mot de passe n'ait transité. Le
-mécanisme est une propriété de NTLM, pas une faille de Samba.
+**Attaque (mesurée).** `smbclient.py` (impacket) avec l'option `-hashes` (format
+`LMHASH:NTHASH`, LM vide, seul le NT compte) ouvre une session SMB authentifiée
+sur le DC (partages `sysvol`, `netlogon`) avec le seul hash NT, sans que le mot de
+passe n'ait transité. Le mécanisme est une propriété de NTLM, pas une faille de
+Samba.
 
 **Détection.** Event 4624 (ouverture de session), branche NTLM réseau. Requête
 compilée :
@@ -196,10 +187,9 @@ secrets d'un compte, sans toucher au disque du DC. Ces droits ne sont normalemen
 portés que par les DC et les administrateurs du domaine.
 
 **Attaque (bloquée).** Depuis le conteneur attaquant, en administrateur du
-domaine :
+domaine, `secretsdump.py` (impacket, `-just-dc-user`, méthode DRSUAPI) échoue :
 
 ```
-secretsdump.py -dc-ip <IP_DC> -just-dc-user lat_user 'lab.local/Administrator:<pass>@<IP_DC>'
 [*] Using the DRSUAPI method to get NTDS.DIT secrets
 [-] byte indices must be integers or slices, not str
 [*] Something went wrong with the DRSUAPI approach.
@@ -272,16 +262,11 @@ Une GPO liée à une OU s'applique à toutes ses machines. Modifier une GPO lié
 une OU sensible déploie une tâche planifiée ou un script de logon à grande
 échelle, vecteur d'exécution et de persistance.
 
-**Attaque (mesurée).** La gestion des GPO passe par samba-tool :
-
-```
-samba-tool gpo listall -H ldap://localhost -U 'LAB\Administrator%<pass>'
-```
-
-Liste les deux GPO par défaut. Sans `-H`, `samba-tool gpo` échoue avec
-`Could not find a DC for domain`, un défaut de résolution DNS/SPN du DC unique
-conteneurisé, contourné par la cible LDAP explicite. Création et modification
-accessibles par la même voie.
+**Attaque (mesurée).** La gestion des GPO passe par `samba-tool gpo` (avec une
+cible LDAP explicite `-H`), qui liste les deux GPO par défaut. Sans `-H`,
+`samba-tool gpo` échoue avec `Could not find a DC for domain`, un défaut de
+résolution DNS/SPN du DC unique conteneurisé, contourné par la cible explicite.
+Création et modification accessibles par la même voie.
 
 **Détection (raisonnée).** Event 5136 (modification d'objet annuaire). Requête
 compilée :
@@ -309,19 +294,12 @@ La délégation contrainte autorise un compte à obtenir des tickets en usurpant
 autre utilisateur vers un service donné (S4U). Attribuée à un compte contrôlé,
 elle permet de se faire passer pour un administrateur vers ce service.
 
-**Configuration (mesurée), abus S4U (bloqué).** L'attribut a été posé et vérifié
-sur un compte machine :
+**Configuration (mesurée), abus S4U (bloqué).** L'attribut a été posé sur un
+compte machine et vérifié (`samba-tool computer show` :
+`msDS-AllowedToDelegateTo: HTTP/dc1.lab.local`, `userAccountControl: 4096`).
+L'abus S4U (`getST.py`, impacket, option `-impersonate`) échoue :
 
 ```
-# msDS-AllowedToDelegateTo: HTTP/dc1.lab.local, userAccountControl: 4096
-samba-tool computer show svc_web01
-```
-
-L'abus S4U échoue :
-
-```
-getST.py -spn HTTP/dc1.lab.local -impersonate Administrator -dc-ip <IP_DC> \
-  'lab.local/svc_web01$:<pass>'
 [*] Requesting S4U2self
 [-] Kerberos SessionError: KRB_AP_ERR_INAPP_CKSUM
 ```
